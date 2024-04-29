@@ -1,9 +1,11 @@
 package com.renatobonfim.aemblogbackend.category;
 
+import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +26,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryID}")
-    public ResponseEntity<Category> findCategoryByID(@PathVariable Long categoryID) {
+    public ResponseEntity<Category> findCategoryByID(@PathVariable Long categoryID) throws CategoryNotFoundException {
         return ResponseEntity.ok(categoryService.findCategoryById(categoryID));
     }
 
@@ -35,7 +37,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryID}")
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category, @PathVariable Long categoryID) {
+    public ResponseEntity<Category> updateCategory(@RequestBody Category category, @PathVariable Long categoryID) throws CategoryNotFoundException {
         return ResponseEntity.ok(categoryService.updateCategory(category, categoryID));
     }
 

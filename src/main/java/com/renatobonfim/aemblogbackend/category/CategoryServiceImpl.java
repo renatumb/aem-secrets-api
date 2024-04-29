@@ -28,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Category category, Long categoryID) {
+    public Category updateCategory(Category category, Long categoryID) throws CategoryNotFoundException {
         Category oldCategory = this.categoryRepository.findById(categoryID ).orElseThrow(() -> new CategoryNotFoundException(categoryID));
 
         oldCategory.setDescription(category.getDescription());
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category findCategoryById(Long categoryId)  {
+    public Category findCategoryById(Long categoryId) throws CategoryNotFoundException {
         return this.categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException( categoryId));
     }
 
