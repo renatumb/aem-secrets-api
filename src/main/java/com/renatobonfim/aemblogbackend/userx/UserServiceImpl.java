@@ -1,9 +1,15 @@
 package com.renatobonfim.aemblogbackend.userx;
 
 import com.renatobonfim.aemblogbackend.config.Constants;
+import com.renatobonfim.aemblogbackend.customExceptions.ErrorReadingPhotoException;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.UserNotFoundException;
 import com.renatobonfim.aemblogbackend.utils.CustomUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -79,7 +85,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String userId) {
+    public byte[] readPhoto(Path pathProfilePhoto) {
+        byte[] photo = new byte[0];
+
+        try {
+            photo = Files.readAllBytes(pathProfilePhoto.normalize());
+        } catch (IOException ioe) {
+            throw new ErrorReadingPhotoException(Constants.ERROR_READING_PROFILE_PHOTO + ioe);
+        }
+        return photo;
+    }
+
+    @Override
+    public void deleteUser(String userId) throws UserNotFoundException {
+        try {
+            String fileUrl = userRepository.findPhoto(userId).orElse(null);
+
+            if (!Objects.isNull(fileUrl)) {
+
+                String fileName = Arrays.stream(fileUrl.split("/"))
+                        .reduce((first, second) -> second)
+                        .orElse(null);
+
+                Files.deleteIfExists(Paths.get(Constants.PROFILE_PICTURE_STORAGE + fileName).normalize());
+            }
+        } catch (IOException ioe) {
+            throw new ErrorReadingPhotoException(Constants.ERROR_READING_PROFILE_PHOTO + ioe);
+        }
         userRepository.deleteById(userId);
     }
 

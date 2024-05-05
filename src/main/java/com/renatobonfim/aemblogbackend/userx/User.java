@@ -9,6 +9,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UuidGenerator;
 
+@NamedQuery( name= "User.findPhoto", query="select us.photoProfile from User us where us.id=:userID" )
+
 @Data
 @Entity
 @Builder

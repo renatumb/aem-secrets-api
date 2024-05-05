@@ -16,7 +16,7 @@ public class Constants {
     public static final String USER_EMAIL_IS_EMPTY = "034. User EMAIL is empty";
     public static final String USER_PASSWORD_IS_EMPTY = "036. User PASSWORD is empty";
     public static final String USER_ABOUT_IS_EMPTY = "038. User ABOUT is empty";
-
+    public static final String ERROR_READING_PROFILE_PHOTO = "040. Error while reading file: ";
 
     public static String PROFILE_PICTURE_STORAGE;
 
