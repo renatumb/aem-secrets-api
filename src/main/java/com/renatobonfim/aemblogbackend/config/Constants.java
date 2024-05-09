@@ -17,6 +17,8 @@ public class Constants {
     public static final String USER_PASSWORD_IS_EMPTY = "036. User PASSWORD is empty";
     public static final String USER_ABOUT_IS_EMPTY = "038. User ABOUT is empty";
     public static final String ERROR_READING_PROFILE_PHOTO = "040. Error while reading file: ";
+    public static final String POST_NOT_FOUND_ID = "042. Post not found for given id:%s";
+    public static final String POST_NOT_FOUND = "044. Post not found for given id/permalink:%s";
 
     public static String PROFILE_PICTURE_STORAGE;
 
