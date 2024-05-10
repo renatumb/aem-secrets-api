@@ -16,7 +16,8 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ CategoryNotFoundException.class,
                         SubscriberNotFoundException.class,
                         UserNotFoundException.class,
-                        PostNotFoundException.class})
+                        PostNotFoundException.class,
+                        NoCommentFoundException.class})
     public ResponseEntity entityNotFoundException(Exception ex) {
         log.warn(ex.getMessage());
         return new ResponseEntity(Map.of(
