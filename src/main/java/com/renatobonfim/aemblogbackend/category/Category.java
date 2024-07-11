@@ -1,6 +1,9 @@
 package com.renatobonfim.aemblogbackend.category;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.renatobonfim.aemblogbackend.post.Post;
 import jakarta.persistence.*;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "_category")
@@ -28,9 +32,9 @@ public class Category {
 
     private String description;
 
-    public Category() {
-
-    }
+    @OneToMany(mappedBy = "category")
+    @JsonBackReference
+    Set<Post> post;
 }
 
 

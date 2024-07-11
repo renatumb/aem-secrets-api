@@ -1,10 +1,13 @@
 package com.renatobonfim.aemblogbackend.post;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.renatobonfim.aemblogbackend.category.Category;
+import com.renatobonfim.aemblogbackend.comment.Comment;
 import com.renatobonfim.aemblogbackend.userx.User;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -43,6 +46,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonManagedReference
     private Category category;
 
     @ManyToOne

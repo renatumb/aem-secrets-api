@@ -31,8 +31,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Category category, Long categoryID) throws CategoryNotFoundException {
         Category oldCategory = this.categoryRepository.findById(categoryID ).orElseThrow(() -> new CategoryNotFoundException(categoryID));
 
-        oldCategory.setDescription(category.getDescription());
-        oldCategory.setName(category.getName());
+        oldCategory.setDescription(category.getDescription() != null ? category.getDescription() : oldCategory.getDescription() );
+        oldCategory.setName(category.getName()!= null ? category.getName() : oldCategory.getName());
 
         return this.categoryRepository.save(oldCategory);
     }

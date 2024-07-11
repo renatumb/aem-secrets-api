@@ -3,9 +3,7 @@ package com.renatobonfim.aemblogbackend.category;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +11,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/category")
 public class CategoryController {
 
-    @Autowired
     private CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping
     public ResponseEntity<Page<Category>> findAllCategories(@RequestParam(value = "page", defaultValue = "0") int page,
                                                             @RequestParam(value = "size", defaultValue = "5") int size,
                                                             @RequestParam(value = "sort", defaultValue = "asc") String sort,
-                                                            @RequestParam(value = "fields", defaultValue = "id") String properties) {
+                                                            @RequestParam(value = "sortedBy", defaultValue = "id") String properties) {
 
         return ResponseEntity.ok().body(categoryService.findAllCategories(page, size, sort, properties.split(",")));
     }

@@ -1,37 +1,64 @@
 package com.renatobonfim.aemblogbackend.customExceptions;
 
+import com.renatobonfim.aemblogbackend.dto.ErrorResponseDTO;
 import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.http.converter.HttpMessageConversionException;
 
 @Slf4j
 @ControllerAdvice
-public class ControllerAdvisor extends ResponseEntityExceptionHandler {
-    @ExceptionHandler({ CategoryNotFoundException.class,
-                        SubscriberNotFoundException.class,
-                        UserNotFoundException.class,
-                        PostNotFoundException.class,
-                        NoCommentFoundException.class})
-    public ResponseEntity entityNotFoundException(Exception ex) {
+public class ControllerAdvisor {
+    @ExceptionHandler({CategoryNotFoundException.class,
+            SubscriberNotFoundException.class,
+            UserNotFoundException.class,
+            PostNotFoundException.class,
+            NoCommentFoundException.class})
+    public ResponseEntity<ErrorResponseDTO> entityNotFoundException(Exception ex) {
         log.warn(ex.getMessage());
-        return new ResponseEntity(Map.of(
-                "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        ), HttpStatus.NOT_FOUND);
+
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler({InvalidFieldException.class, IllegalArgumentException.class, ErrorReadingPhotoException.class, PropertyReferenceException.class })
+    @ExceptionHandler({InvalidFieldException.class,
+            IllegalArgumentException.class,
+            ErrorReadingPhotoException.class,
+            PropertyReferenceException.class,
+            HttpMessageConversionException.class})
     public ResponseEntity InvalidFieldException(Exception ex) {
         log.warn(ex.getMessage());
-        return new ResponseEntity(Map.of(
-                "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        ), HttpStatus.BAD_REQUEST);
+
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler({
+            DataIntegrityViolationException.class
+    })
+    private ResponseEntity<ErrorResponseDTO> conflict(Exception ex) {
+        log.warn(ex.getMessage());
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    /**
+     * Generic method to send formated API response which will always be like:<BR/>
+     * {
+     *     "message":"string"
+     *     "timestamp": "..."
+     * }
+     *  <BR/>
+     *  Along with http status code
+     * */
+    private ResponseEntity<ErrorResponseDTO> buildError(HttpStatus status, String message){
+        return ResponseEntity.
+                status(status)
+                .body(ErrorResponseDTO.builder()
+                        .message(message)
+                        .timestamp(LocalDateTime.now().toString())
+                        .build());
     }
 }
