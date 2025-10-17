@@ -44,10 +44,14 @@ public class Post {
 
     private List<String> tags;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
     @JsonManagedReference
-    private Category category;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "_post_category",
+            joinColumns = @JoinColumn(name="fk_post", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name="fk_category", referencedColumnName = "id", nullable = false)
+    )
+    private Set<Category> categories;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

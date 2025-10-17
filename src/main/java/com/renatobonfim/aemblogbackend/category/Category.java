@@ -32,7 +32,7 @@ public class Category {
 
     private String description;
 
-    @OneToMany(mappedBy = "category")
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     @JsonBackReference
     Set<Post> post;
 }
