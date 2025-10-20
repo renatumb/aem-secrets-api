@@ -30,11 +30,11 @@ public class PostController {
     public ResponseEntity<Page<Post>> findAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "size", defaultValue = "5") int size,
                                                    @RequestParam(value = "sort", defaultValue = "asc") String sort,
-                                                   @RequestParam(value = "fields", defaultValue = "title") String properties,
-                                                   @RequestParam(value = "category", required = false) Long categoryId
+                                                   @RequestParam(value = "orderBy", defaultValue = "title") String properties,
+                                                   @RequestParam(value = "categoryFilter", required = false) Long categoryId
     ) throws CategoryNotFoundException {
 
-        Category category = new Category();
+        Category category = Category.builder().build();
         category.setId(categoryId);
 
         return ResponseEntity.ok().body(postService.findAllPostByCategory(page, size, sort, properties.split(","), category));

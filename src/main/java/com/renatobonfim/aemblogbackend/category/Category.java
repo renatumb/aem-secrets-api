@@ -1,8 +1,10 @@
 package com.renatobonfim.aemblogbackend.category;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.renatobonfim.aemblogbackend.post.Post;
 import jakarta.persistence.*;
+
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +35,26 @@ public class Category {
     private String description;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     Set<Post> post;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        
+        if (o == null || getClass() != o.getClass()){ 
+            return false;
+        }
+        
+        Category category = (Category) o;
+        return Objects.equals(id, category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
-
-

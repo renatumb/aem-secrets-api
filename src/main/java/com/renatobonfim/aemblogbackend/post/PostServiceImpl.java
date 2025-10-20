@@ -6,9 +6,7 @@ import com.renatobonfim.aemblogbackend.config.Constants;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,12 +27,15 @@ public class PostServiceImpl implements PostService {
     public Post createPost(Post post) throws CategoryNotFoundException {
         post.setCreationDate(new Date());
         post.setLastModificationDate(new Date());
+        
+        HashSet foundCategories = new HashSet();
+        
+        post.getCategories().forEach((category) -> {
+            Category foundCategory = categoryRepository.findById(category.getId()).<CategoryNotFoundException>orElseThrow(() -> new CategoryNotFoundException(category.getId()));
+            foundCategories.add(foundCategory);
+        });
 
-        try {
-            categoryRepository.findById(post.getCategory().getId()).orElseThrow(() -> new CategoryNotFoundException(post.getCategory().getId()));
-        } catch (NullPointerException ex) {
-            throw new InvalidFieldException(ex.getMessage());
-        }
+        post.setCategories(foundCategories);
         return postRespository.save(post);
     }
 
@@ -45,7 +46,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> findAllPosts(int page, int size, String sort, String[] properties) {
-        return postRespository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+        Page<Post> posts = postRespository.findAllWithCategories(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+        return posts;
     }
 
 

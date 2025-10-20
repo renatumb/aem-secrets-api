@@ -7,14 +7,15 @@ import com.renatobonfim.aemblogbackend.userx.User;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UuidGenerator;
 
-@NamedQuery(name = "Post.findPostByIdOrPermalink", query = "SELECT ps FROM Post ps WHERE ps.id=:postPermalinkOrID OR ps.permalink=:postPermalinkOrID")
-@NamedQuery(name = "Post.findAllPostByCategory", query = "SELECT ps FROM Post ps WHERE ps.category=:category")
+@NamedQuery(name = "Post.findPostByIdOrPermalink", query = "SELECT ps FROM Post ps WHERE   ps.permalink=:postPermalinkOrID")
+//@NamedQuery(name = "Post.findAllPostByCategory", query = "SELECT ps FROM Post ps WHERE ps.category=:category")
 
 @Data
 @Entity
@@ -23,7 +24,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Table(name = "_post")
 public class Post {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Id
     @UuidGenerator(style = UuidGenerator.Style.AUTO)
@@ -43,9 +44,8 @@ public class Post {
     private boolean highlight;
 
     private List<String> tags;
-
-    @JsonManagedReference
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "_post_category",
             joinColumns = @JoinColumn(name="fk_post", referencedColumnName = "id", nullable = false),
@@ -56,4 +56,28 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User author;
+    
+    
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comment;
+
+    /* */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Post post = (Post) o;
+        return Objects.equals(id, post.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
