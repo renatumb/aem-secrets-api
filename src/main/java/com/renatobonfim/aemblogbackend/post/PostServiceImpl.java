@@ -53,7 +53,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post findPostByIdOrPermalink(String postPermalinkOrID) throws PostNotFoundException {
-        return postRespository.findPostByIdOrPermalink(postPermalinkOrID).orElseThrow(() -> new PostNotFoundException(String.format(Constants.POST_NOT_FOUND, postPermalinkOrID)));
+
+        return postRespository
+                .findPostById(postPermalinkOrID)
+                .or(  () -> postRespository.findPostByPermalink(postPermalinkOrID)  )
+                .orElseThrow(  () -> new PostNotFoundException(String.format(Constants.POST_NOT_FOUND, postPermalinkOrID)));
+
     }
 
     @Override
@@ -67,7 +72,7 @@ public class PostServiceImpl implements PostService {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sort), properties);
-        List<Post> allPostByCategory = postRespository.findAllPostByCategory(category);
+        List<Post> allPostByCategory = postRespository.findByCategories(category);
 
         long start = pageRequest.getOffset();
         long end = Math.min((start + pageRequest.getPageSize()), allPostByCategory.size());
@@ -86,19 +91,22 @@ public class PostServiceImpl implements PostService {
         String content_en = Objects.nonNull(post.getContent_en()) && !post.getContent_en().isEmpty() && !post.getContent_en().isBlank() ? post.getContent_en() : oldPost.getContent_en();
         boolean highlight = post.isHighlight();
         List<String> tags = Objects.nonNull(post.getTags()) && !post.getTags().isEmpty() ? post.getTags() : oldPost.getTags();
-        Category category = Objects.nonNull(post.getCategory()) ? post.getCategory() : oldPost.getCategory();
+
+        Set<Category> categories = Objects.nonNull(post.getCategories() ) ? post.getCategories() : oldPost.getCategories() ;
+        categories.stream().forEach((category) -> {
+            categoryRepository.findById( category.getId()).<CategoryNotFoundException>orElseThrow(() -> new CategoryNotFoundException(category.getId()));
+        });
 
         oldPost.setPermalink(permalink);
         oldPost.setTitle(title);
         oldPost.setDescription(description);
         oldPost.setThumbnail(thumbnail);
         oldPost.setContent_en(content_en);
-        oldPost.setCategory(category);
+        oldPost.setCategories( categories );
         oldPost.setHighlight(highlight);
         oldPost.setTags(tags);
         oldPost.setLastModificationDate(new Date());
-
-        categoryRepository.findById(category.getId()).orElseThrow(() -> new CategoryNotFoundException(category.getId()));
+        
         return postRespository.save(oldPost);
     }
 
