@@ -6,9 +6,11 @@ import com.renatobonfim.aemblogbackend.customExceptions.NoCommentFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
 import com.renatobonfim.aemblogbackend.post.Post;
 import com.renatobonfim.aemblogbackend.post.PostService;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,23 +34,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment createComment(Comment comment) throws PostNotFoundException {
-        try {
-            Objects.requireNonNull(comment, Constants.INVALID_FIELD + ": Comment");
-            Objects.requireNonNull(comment.getNameAuthor(), Constants.INVALID_FIELD + ": Author");
-            Objects.requireNonNull(comment.getContent(), Constants.INVALID_FIELD + ": Content");
 
-            if (Objects.isNull(comment.getPost())) {
-                throw new InvalidFieldException(Constants.INVALID_FIELD + ": Post");
-            }
-
-            if (comment.getNameAuthor().isBlank() || comment.getNameAuthor().isEmpty() || comment.getContent().isBlank() || comment.getContent().isEmpty()) {
-                throw new InvalidFieldException(Constants.INVALID_FIELD);
-            }
-            comment.setApproved(false);
-            comment.setCreationDate(new Date());
-        } catch (NullPointerException | InvalidFieldException ex) {
-            throw new InvalidFieldException(ex.getMessage());
-        }
+        comment.setApproved(false);
+        comment.setCreationDate(new Date());
         comment.setPost(postService.findPostByIdOrPermalink(comment.getPost().getId()));
 
         return commentRepository.save(comment);

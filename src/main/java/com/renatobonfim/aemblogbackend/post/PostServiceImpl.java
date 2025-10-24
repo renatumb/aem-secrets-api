@@ -46,7 +46,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> findAllPosts(int page, int size, String sort, String[] properties) {
-        Page<Post> posts = postRespository.findAllWithCategories(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+        //Page<Post> posts = postRespository.findAllWithCategories(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+        Page<Post> posts = postRespository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
         return posts;
     }
 

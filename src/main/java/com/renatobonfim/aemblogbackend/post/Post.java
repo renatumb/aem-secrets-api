@@ -57,7 +57,7 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User author;
     
-    
+    @JsonManagedReference
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comment;
 

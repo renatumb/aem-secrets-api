@@ -2,11 +2,14 @@ package com.renatobonfim.aemblogbackend.customExceptions;
 
 import com.renatobonfim.aemblogbackend.dto.ErrorResponseDTO;
 import java.time.LocalDateTime;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -29,11 +32,24 @@ public class ControllerAdvisor {
             IllegalArgumentException.class,
             ErrorReadingPhotoException.class,
             PropertyReferenceException.class,
-            HttpMessageConversionException.class})
+            HttpMessageConversionException.class,
+            MissingRequestValueException.class})
     public ResponseEntity InvalidFieldException(Exception ex) {
         log.warn(ex.getMessage());
 
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity invalidPayload(MethodArgumentNotValidException ex) {
+        StringBuilder errors = new StringBuilder();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            errors.append(error.getDefaultMessage());
+            errors.append(" | ");
+        });
+
+        log.warn(errors.toString());
+        return buildError(HttpStatus.BAD_REQUEST, errors.toString());
     }
 
     @ExceptionHandler({

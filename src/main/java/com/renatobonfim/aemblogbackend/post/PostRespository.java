@@ -16,6 +16,7 @@ public interface PostRespository extends JpaRepository<Post, String> {
     
     List<Post> findByCategories(Category category);
     
-    @Query("SELECT p FROM Post p JOIN FETCH p.categories")
-    Page<Post> findAllWithCategories(Pageable pageable);
+    //@Query("SELECT p FROM Post p JOIN FETCH p.categories")
+    //Page<Post> findAllWithCategories(Pageable pageable);  
+    Page<Post> findAll(Pageable pageable);
 }

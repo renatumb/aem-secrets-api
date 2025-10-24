@@ -1,9 +1,10 @@
 package com.renatobonfim.aemblogbackend.comment;
 
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
-import com.renatobonfim.aemblogbackend.post.Post;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class CommentController {
                                                          @RequestParam(value = "size", defaultValue = "5") int size,
                                                          @RequestParam(value = "sort", defaultValue = "asc") String sort,
                                                          @RequestParam(value = "fields", defaultValue = "creationDate") String properties,
-                                                         @RequestParam(value = "post", required = false) String postId // test!!
+                                                         @RequestParam(value = "post", required = true) String postId
     ) {
         return ResponseEntity.ok(commentService.findAllCommentsByPost(page, size, sort, properties.split(","), postId));
     }
@@ -38,7 +39,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody Comment comment) throws URISyntaxException, PostNotFoundException {
+    public ResponseEntity<Comment> createComment(@Valid @RequestBody Comment comment) throws URISyntaxException, PostNotFoundException {
         Comment createdComment = commentService.createComment(comment);
         return ResponseEntity.created(new URI(createdComment.getId().toString())).body(createdComment);
     }
