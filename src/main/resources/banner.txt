@@ -1,0 +1,23 @@
+
+
+${AnsiColor.BRIGHT_CYAN}
+               AAA               EEEEEEEEEEEEEEEEEEEEEEMMMMMMMM               MMMMMMMM        SSSSSSSSSSSSSSS                                                                                          tttt
+              A:::A              E::::::::::::::::::::EM:::::::M             M:::::::M      SS:::::::::::::::S                                                                                      ttt:::t
+             A:::::A             E::::::::::::::::::::EM::::::::M           M::::::::M     S:::::SSSSSS::::::S                                                                                      t:::::t
+            A:::::::A            EE::::::EEEEEEEEE::::EM:::::::::M         M:::::::::M     S:::::S     SSSSSSS                                                                                      t:::::t
+           A:::::::::A             E:::::E       EEEEEEM::::::::::M       M::::::::::M     S:::::S                eeeeeeeeeeee        ccccccccccccccccrrrrr   rrrrrrrrr       eeeeeeeeeeee    ttttttt:::::ttttttt        ssssssssss
+          A:::::A:::::A            E:::::E             M:::::::::::M     M:::::::::::M     S:::::S              ee::::::::::::ee    cc:::::::::::::::cr::::rrr:::::::::r    ee::::::::::::ee  t:::::::::::::::::t      ss::::::::::s
+         A:::::A A:::::A           E::::::EEEEEEEEEE   M:::::::M::::M   M::::M:::::::M      S::::SSSS          e::::::eeeee:::::ee c:::::::::::::::::cr:::::::::::::::::r  e::::::eeeee:::::eet:::::::::::::::::t    ss:::::::::::::s
+        A:::::A   A:::::A          E:::::::::::::::E   M::::::M M::::M M::::M M::::::M       SS::::::SSSSS    e::::::e     e:::::ec:::::::cccccc:::::crr::::::rrrrr::::::re::::::e     e:::::etttttt:::::::tttttt    s::::::ssss:::::s
+       A:::::A     A:::::A         E:::::::::::::::E   M::::::M  M::::M::::M  M::::::M         SSS::::::::SS  e:::::::eeeee::::::ec::::::c     ccccccc r:::::r     r:::::re:::::::eeeee::::::e      t:::::t           s:::::s  ssssss
+      A:::::AAAAAAAAA:::::A        E::::::EEEEEEEEEE   M::::::M   M:::::::M   M::::::M            SSSSSS::::S e:::::::::::::::::e c:::::c              r:::::r     rrrrrrre:::::::::::::::::e       t:::::t             s::::::s
+     A:::::::::::::::::::::A       E:::::E             M::::::M    M:::::M    M::::::M                 S:::::Se::::::eeeeeeeeeee  c:::::c              r:::::r            e::::::eeeeeeeeeee        t:::::t                s::::::s
+    A:::::AAAAAAAAAAAAA:::::A      E:::::E       EEEEEEM::::::M     MMMMM     M::::::M                 S:::::Se:::::::e           c::::::c     ccccccc r:::::r            e:::::::e                 t:::::t    ttttttssssss   s:::::s
+   A:::::A             A:::::A   EE::::::EEEEEEEE:::::EM::::::M               M::::::M     SSSSSSS     S:::::Se::::::::e          c:::::::cccccc:::::c r:::::r            e::::::::e                t::::::tttt:::::ts:::::ssss::::::s
+  A:::::A               A:::::A  E::::::::::::::::::::EM::::::M               M::::::M     S::::::SSSSSS:::::S e::::::::eeeeeeee   c:::::::::::::::::c r:::::r             e::::::::eeeeeeee        tt::::::::::::::ts::::::::::::::s
+ A:::::A                 A:::::A E::::::::::::::::::::EM::::::M               M::::::M     S:::::::::::::::SS   ee:::::::::::::e    cc:::::::::::::::c r:::::r              ee:::::::::::::e          tt:::::::::::tt s:::::::::::ss
+AAAAAAA                   AAAAAAAEEEEEEEEEEEEEEEEEEEEEEMMMMMMMM               MMMMMMMM      SSSSSSSSSSSSSSS       eeeeeeeeeeeeee      cccccccccccccccc rrrrrrr                eeeeeeeeeeeeee            ttttttttttt    sssssssssss
+
+                                                                                                                                      ${AnsiColor.GREEN}${AnsiBackground.BRIGHT_RED}${application.title}${application.version}${AnsiBackground.DEFAULT}
+                                                                                                                                                                                                   ${AnsiColor.BRIGHT_GREEN}${AnsiBackground.BRIGHT_WHITE}Powered by Spring Boot ${spring-boot.version}${AnsiBackground.DEFAULT}
+
