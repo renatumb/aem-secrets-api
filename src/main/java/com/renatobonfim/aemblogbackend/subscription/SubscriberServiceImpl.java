@@ -24,31 +24,15 @@ public class SubscriberServiceImpl implements SubscriberService {
         String subsEmail = subscriber.getEmail();
         String subsName = subscriber.getName();
 
-        try {
-            Objects.requireNonNull(subsEmail, Constants.SUBSCRIBER_EMAIL_MISSING);
-            Objects.requireNonNull(subsName, Constants.SUBSCRIBER_NAME_MISSING);
-
-            if (subsEmail.isBlank() | subsEmail.isEmpty()) {
-                throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_INVALID);
-            }
-
-            if (subsName.isBlank() | subsName.isEmpty()) {
-                throw new InvalidFieldException(Constants.SUBSCRIBER_NAME_INVALID);
-            }
-
-            if (subscriberRepository.findById(subsEmail).isPresent()) {
-                throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_ALREADY_EXIST);
-            }
-
-        } catch (NullPointerException | InvalidFieldException ex) {
-            throw new InvalidFieldException(ex.getMessage());
+        if (subscriberRepository.findById(subsEmail).isPresent()) {
+            throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_ALREADY_EXIST);
         }
 
         return subscriberRepository.save(
                 Subscriber.builder()
                         .email(subsEmail)
                         .dateSubscription(new Date())
-                        .enableSubscription(false)
+                        .enableSubscription(true)
                         .name(subsName).build()
         );
     }
@@ -59,24 +43,12 @@ public class SubscriberServiceImpl implements SubscriberService {
         String subsName = subscriber.getName();
         String subsEmail = subscriberEmail;
 
-        try {
-            Objects.requireNonNull(subsEmail, Constants.SUBSCRIBER_EMAIL_MISSING);
-            Objects.requireNonNull(subsName, Constants.SUBSCRIBER_NAME_MISSING);
-
-            if (subsEmail.isBlank() | subsEmail.isEmpty()) {
-                throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_INVALID);
-            }
-
-            if (subsName.isBlank() | subsName.isEmpty()) {
-                throw new InvalidFieldException(Constants.SUBSCRIBER_NAME_INVALID);
-            }
-        } catch (NullPointerException | InvalidFieldException ex) {
-            throw new InvalidFieldException(ex.getMessage());
-        }
-
         Subscriber oldSubscriber = findSubscriberByEmail(subsEmail);
 
-        oldSubscriber.setName( subsName);
+        if ( Objects.nonNull(subsName) && !subsName.isBlank() ) {
+            oldSubscriber.setName(subsName);
+        }
+        
         oldSubscriber.setEnableSubscription( subscriber.isEnableSubscription() );
 
         if( subscriber.isEnableSubscription() ){
