@@ -14,5 +14,6 @@ public interface CategoryService {
 
     Category findCategoryById(Long categoryId) throws CategoryNotFoundException;
 
+    Category findCategory(String categoryIDorName);
     Page<Category> findAllCategories(int page, int size, String sort, String[] properties);
 }
