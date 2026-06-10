@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/subscriber")
 public class SubscriberController {
@@ -37,7 +38,7 @@ public class SubscriberController {
         return ResponseEntity.created(new URI(subscriberCreated.getEmail())).body(subscriberCreated);
     }
 
-    @PutMapping("/{subscriberEmail}")
+    @PatchMapping("/{subscriberEmail}")
     public ResponseEntity<Subscriber> updateSubscriber(@RequestBody Subscriber subscriber, @Validated @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
         return ResponseEntity.ok(subscriberService.updateSubscriber(subscriber, subscriberEmail));
     }

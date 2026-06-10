@@ -1,7 +1,7 @@
 package com.renatobonfim.aemblogbackend.subscription;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,11 +33,7 @@ public class Subscriber {
     @NotBlank(message = "'Name' must not be blank")
     @Size(min = 3, message = "'Name' must be at least 3 chars")
     private String name;
-
-    
     private boolean enableSubscription;
-
-    private Date dateSubscription;
-
-    private Date dateUnsubscription;
+    private LocalDateTime dateCreation;
+    private LocalDateTime dateStatus;
 }

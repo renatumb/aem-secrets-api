@@ -3,8 +3,7 @@ package com.renatobonfim.aemblogbackend.subscription;
 import com.renatobonfim.aemblogbackend.config.Constants;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.SubscriberNotFoundException;
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +22,7 @@ public class SubscriberServiceImpl implements SubscriberService {
 
         String subsEmail = subscriber.getEmail();
         String subsName = subscriber.getName();
+        LocalDateTime now = LocalDateTime.now();
 
         if (subscriberRepository.findById(subsEmail).isPresent()) {
             throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_ALREADY_EXIST);
@@ -31,9 +31,11 @@ public class SubscriberServiceImpl implements SubscriberService {
         return subscriberRepository.save(
                 Subscriber.builder()
                         .email(subsEmail)
-                        .dateSubscription(new Date())
+                        .name(subsName)
+                        .dateCreation(now )
+                        .dateStatus( now )
                         .enableSubscription(true)
-                        .name(subsName).build()
+                        .build()
         );
     }
 
@@ -50,13 +52,7 @@ public class SubscriberServiceImpl implements SubscriberService {
         }
         
         oldSubscriber.setEnableSubscription( subscriber.isEnableSubscription() );
-
-        if( subscriber.isEnableSubscription() ){
-            oldSubscriber.setDateUnsubscription(null);
-        }else{
-            oldSubscriber.setDateUnsubscription(new Date());
-        }
-
+        oldSubscriber.setDateStatus( LocalDateTime.now() );
         return subscriberRepository.save(oldSubscriber);
     }
 
