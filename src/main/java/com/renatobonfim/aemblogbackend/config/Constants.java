@@ -31,4 +31,12 @@ public class Constants {
     public void setCurrentHost(String value){
         Constants.CURRENT_HOST = value;
     }
+
+    /** */
+    public static String IMAGES_ROOT_PATH;
+
+    @Value("${app.config.images-post-root-path}")
+    public void setImagesUploadRootPath(String value) {
+        Constants.IMAGES_ROOT_PATH = value;
+    }
 }

@@ -4,6 +4,9 @@ import com.renatobonfim.aemblogbackend.category.Category;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface PostService {
 
@@ -18,4 +21,8 @@ public interface PostService {
     Post updatePost(Post post, String postId) throws PostNotFoundException, CategoryNotFoundException;
 
     Post createPost(Post post) throws CategoryNotFoundException;
+
+    String uploadImage(String postId, MultipartFile file);
+
+    byte [] downloadImage( String postId, String fileName) throws IOException;
 }

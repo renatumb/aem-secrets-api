@@ -6,6 +6,10 @@ import com.renatobonfim.aemblogbackend.config.Constants;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +17,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -37,6 +43,38 @@ public class PostServiceImpl implements PostService {
 
         post.setCategories(foundCategories);
         return postRespository.save(post);
+    }
+
+    @Override
+    public String uploadImage(String postId, MultipartFile file) {
+        postRespository.findById(postId).orElseThrow(() -> new PostNotFoundException(String.format(Constants.POST_NOT_FOUND_ID, postId)));
+
+        try {
+//          String originalFilename = file.getOriginalFilename();
+//          String extension = (originalFilename != null && originalFilename.contains(".")) ? originalFilename.substring(originalFilename.lastIndexOf(".")) : ".png";
+//          String fileName = UUID.randomUUID() + extension;
+
+            String fileName = Objects.requireNonNull(file.getOriginalFilename()).trim().toLowerCase();
+
+            Path storageDir = Paths.get(Constants.IMAGES_ROOT_PATH, postId).normalize();
+
+            if (!Files.exists(storageDir)) {
+                Files.createDirectories(storageDir);
+            }
+
+            Path target = storageDir.resolve(fileName);
+            Files.copy(file.getInputStream(), target, REPLACE_EXISTING);
+
+            return target.subpath(1,3).toString(); // Excluding the Constants.IMAGES_ROOT_PATH
+
+        } catch (IOException ex) {
+            throw new RuntimeException("unable to save image", ex);
+        }
+    }
+
+    @Override
+    public byte[] downloadImage(String postID, String fileName) throws IOException {
+        return Files.readAllBytes(Paths.get(Constants.IMAGES_ROOT_PATH, postID, fileName) );
     }
 
     @Override

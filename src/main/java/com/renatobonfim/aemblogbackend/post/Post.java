@@ -61,6 +61,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comment;
 
+
+    @Enumerated (EnumType.STRING)
+    private StatusPost statusPost = StatusPost.DRAFT;
     /* */
     @Override
     public boolean equals(Object o) {
@@ -81,3 +84,4 @@ public class Post {
         return Objects.hash(id);
     }
 }
+
