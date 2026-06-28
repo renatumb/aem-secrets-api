@@ -41,7 +41,7 @@ public class Post {
     private Date creationDate;
     private Date lastModificationDate;
 
-    private boolean highlight;
+    private Boolean highlight;
 
     private List<String> tags;
     
@@ -63,7 +63,7 @@ public class Post {
 
 
     @Enumerated (EnumType.STRING)
-    private StatusPost statusPost = StatusPost.DRAFT;
+    private StatusPost statusPost;
     /* */
     @Override
     public boolean equals(Object o) {

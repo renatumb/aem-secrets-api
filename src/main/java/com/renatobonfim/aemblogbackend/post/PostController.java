@@ -54,6 +54,10 @@ public class PostController {
     @Operation(summary = "Create a Post.................... createPost(@RequestBody Post post) ")
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post) throws URISyntaxException, CategoryNotFoundException {
+
+        post.setStatusPost( StatusPost.DRAFT );
+        post.setHighlight(false);
+
         Post postCreated = postService.createPost(post);
         return ResponseEntity.created(new URI(postCreated.getId().toString())).body(postCreated);
     }
