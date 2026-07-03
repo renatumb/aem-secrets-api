@@ -107,9 +107,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAllPosts(int page, int size, String sort, String[] properties) {
-        //Page<Post> posts = postRespository.findAllWithCategories(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+    public Page<Post> findAllPosts(int page, int size, String sort, String[] properties, Category category, Boolean highlight) {
+
+        if (Objects.nonNull(category.getId())) {
+            return findAllPostByCategory(page, size, sort, properties, category);
+        }
+
+        if ( Objects.nonNull(highlight)){
+            return findByHighlight(page, size, sort, properties, highlight);
+        }
+
         Page<Post> posts = postRespository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
+        return posts;
+    }
+
+    private Page<Post> findByHighlight(int page, int size, String sort, String[] properties, Boolean highlight) {
+        Page<Post> posts = postRespository.findByHighlight(highlight, PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
         return posts;
     }
 
@@ -127,10 +140,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory) throws CategoryNotFoundException {
         Long categoryId = postCategory.getId();
-
-        if (Objects.isNull(categoryId)) {
-            return findAllPosts(page, size, sort, properties);
-        }
 
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
