@@ -35,14 +35,16 @@ public class PostController {
     public ResponseEntity<Page<Post>> findAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "size", defaultValue = "5") int size,
                                                    @RequestParam(value = "sort", defaultValue = "asc") String sort,
-                                                   @RequestParam(value = "orderBy", defaultValue = "title") String properties,
+                                                   @RequestParam(value = "orderBy", defaultValue = "title") String orderByFields,
                                                    @RequestParam(value = "categoryFilter", required = false) Long categoryId,
-                                                   @RequestParam(value = "highlight", required = false) Boolean highlight
-    ) throws CategoryNotFoundException {
+                                                   @RequestParam(value = "highlight", required = false) Boolean highlight,
+                                                   @RequestParam(value = "tagFilter", required = false) String tagFilter
+                                                   ) throws CategoryNotFoundException {
 
         Category category = Category.builder().build();
         category.setId(categoryId);
-        return ResponseEntity.ok().body(postService.findAllPosts(page, size, sort, properties.split(","), category, highlight ));
+
+        return ResponseEntity.ok().body(postService.findAllPosts(page, size, sort, orderByFields.split(","), category, highlight, tagFilter));
     }
 
     @Operation(summary = "find a post by its #Id or Permalink .................... findPostByIdOrPermalink(@PathVariable String postPermalinkOrID) ")

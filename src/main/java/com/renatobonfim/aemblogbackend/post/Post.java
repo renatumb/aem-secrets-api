@@ -5,6 +5,7 @@ import com.renatobonfim.aemblogbackend.category.Category;
 import com.renatobonfim.aemblogbackend.comment.Comment;
 import com.renatobonfim.aemblogbackend.userx.User;
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +44,11 @@ public class Post {
 
     private Boolean highlight;
 
-    private List<String> tags;
+    // Stores multiple tags per post in a separate join table (portable across PostgreSQL, MySQL, etc.).
+    @ElementCollection(fetch = FetchType.LAZY) // Load tags only when accessed; enables JPQL JOIN p.tags for filtering.
+    @CollectionTable(name = "_post_tags", joinColumns = @JoinColumn(name = "post_id")) // One row per tag, linked back to _post.
+    @Column(name = "tag") // Column name for each tag value inside _post_tags.
+    private List<String> tags = new ArrayList<>(); // Default empty list avoids null checks when no tags are set.
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

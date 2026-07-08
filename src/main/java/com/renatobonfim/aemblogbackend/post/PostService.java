@@ -12,7 +12,7 @@ public interface PostService {
 
     void deletePostById(String PostId);
 
-    Page<Post> findAllPosts(int page, int size, String sort, String[] properties, Category category, Boolean highlight);
+    Page<Post> findAllPosts(int page, int size, String sort, String[] properties, Category category, Boolean highlight, String tagFilter);
 
     Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory) throws CategoryNotFoundException;
 
