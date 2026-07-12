@@ -11,7 +11,7 @@ public interface CommentService {
 
     Page<Comment> findAllComments(int page, int size, String sort, String[] properties);
 
-    Page<Comment> findAllCommentsByPost(int page, int size, String sort, String[] properties, String postId);
+    Page<Comment> findAllCommentsByPost(int page, int size, String sort, String[] properties, String postId, String statusFilter);
 
     Comment findById(Integer commentId);
 

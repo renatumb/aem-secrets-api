@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/comment")
+@CrossOrigin()
 public class CommentController {
 
     @Autowired
@@ -24,13 +25,14 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Comment>> findAllComments(@RequestParam(value = "page", defaultValue = "0") int page,
+    public ResponseEntity<Page<Comment>> findAllByPostComments(@RequestParam(value = "page", defaultValue = "0") int page,
                                                          @RequestParam(value = "size", defaultValue = "5") int size,
                                                          @RequestParam(value = "sort", defaultValue = "asc") String sort,
-                                                         @RequestParam(value = "fields", defaultValue = "creationDate") String properties,
-                                                         @RequestParam(value = "post", required = true) String postId
+                                                         @RequestParam(value = "orderBy", defaultValue = "creationDate") String properties,
+                                                         @RequestParam(value = "postId", required = false  ) String postId,
+                                                         @RequestParam(value = "statusFilter", required = false) String statusFilter
     ) {
-        return ResponseEntity.ok(commentService.findAllCommentsByPost(page, size, sort, properties.split(","), postId));
+        return ResponseEntity.ok(commentService.findAllCommentsByPost(page, size, sort, properties.split(","), postId, statusFilter));
     }
 
     @GetMapping("/{commentId}")
