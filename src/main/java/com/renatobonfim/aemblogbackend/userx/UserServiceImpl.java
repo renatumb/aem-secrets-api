@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    public PasswordEncoder passwordEncoder;
 
     @Override
     public User createUser(User user, MultipartFile profilePhoto) {
@@ -61,10 +65,11 @@ public class UserServiceImpl implements UserService {
             throw new InvalidFieldException(ex.getMessage());
         }
 
-        User userCreated = userRepository.save(User.builder()
+        User userCreated = userRepository.save(
+                User.builder()
                 .name(user.getName())
                 .email(user.getEmail())
-                .password(user.getPassword())
+                .password( passwordEncoder.encode( user.getPassword() ))
                 .about(user.getAbout())
                 .build()
         );
@@ -156,7 +161,7 @@ public class UserServiceImpl implements UserService {
         oldUser.setAbout(user.getAbout());
         oldUser.setEmail(user.getEmail());
         oldUser.setName(user.getName());
-        oldUser.setPassword(user.getPassword());
+        oldUser.setPassword( passwordEncoder.encode( user.getPassword() ) );
 
         return userRepository.save(oldUser);
     }
