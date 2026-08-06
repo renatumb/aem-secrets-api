@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -21,7 +22,7 @@ public class LoginController {
 
     @PostMapping("/api/login")
     public ResponseEntity login(@RequestBody @Valid LoginRequest loginRequest) {
-        String token = jwtService.generateJWTToken(loginRequest.username, loginRequest.password);
+        String token = jwtService.generateJWTToken(loginRequest.username.toLowerCase(Locale.ROOT), loginRequest.password);
 
         return ResponseEntity.ok(Map.of("token", token));
     }

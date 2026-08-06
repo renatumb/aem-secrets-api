@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
         User userCreated = userRepository.save(
                 User.builder()
                 .name(user.getName())
-                .email(user.getEmail())
+                .email(user.getEmail().toLowerCase(Locale.ROOT))
                 .password( passwordEncoder.encode( user.getPassword() ))
                 .about(user.getAbout())
                 .build()
@@ -125,7 +126,7 @@ public class UserServiceImpl implements UserService {
         User oldUser = findUserByID(userId);
 
         String userName = user.getName();
-        String userEmail = user.getPassword();
+        String userEmail = user.getEmail();
         String userPassword = user.getPassword();
         String userAbout = user.getAbout();
 
@@ -159,7 +160,7 @@ public class UserServiceImpl implements UserService {
         }
 
         oldUser.setAbout(user.getAbout());
-        oldUser.setEmail(user.getEmail());
+        oldUser.setEmail(user.getEmail().toLowerCase(Locale.ROOT));
         oldUser.setName(user.getName());
         oldUser.setPassword( passwordEncoder.encode( user.getPassword() ) );
 

@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/api/contact")
-@CrossOrigin
 @AllArgsConstructor
 public class ContactController {
 

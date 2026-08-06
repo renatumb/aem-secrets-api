@@ -18,7 +18,6 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @RequestMapping("/api/post")
-@CrossOrigin
 public class PostController {
 
     @Autowired

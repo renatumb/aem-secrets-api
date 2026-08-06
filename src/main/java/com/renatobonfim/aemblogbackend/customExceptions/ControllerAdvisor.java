@@ -8,6 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -58,6 +60,13 @@ public class ControllerAdvisor {
     private ResponseEntity<ErrorResponseDTO> conflict(Exception ex) {
         log.warn(ex.getMessage());
         return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ResponseEntity<ErrorResponseDTO> authenticationFailed(AuthenticationException ex) {
+        log.warn("Authentication failed: {}", ex.getMessage());
+
+        return buildError(HttpStatus.UNAUTHORIZED, "Invalid username or password");
     }
 
     /**
