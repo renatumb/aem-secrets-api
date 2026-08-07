@@ -72,6 +72,8 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail().toLowerCase(Locale.ROOT))
                 .password( passwordEncoder.encode( user.getPassword() ))
                 .about(user.getAbout())
+                .accessLevel( AccessLevel.CAN_READ )
+                .accountLocked(false)
                 .build()
         );
 
@@ -129,6 +131,8 @@ public class UserServiceImpl implements UserService {
         String userEmail = user.getEmail();
         String userPassword = user.getPassword();
         String userAbout = user.getAbout();
+        Boolean accountLocked = user.getAccountLocked() ;
+        AccessLevel accessLevel = user.getAccessLevel() ;
 
         try {
             Objects.requireNonNull(userName, Constants.USER_NAME_IS_EMPTY);
@@ -163,6 +167,14 @@ public class UserServiceImpl implements UserService {
         oldUser.setEmail(user.getEmail().toLowerCase(Locale.ROOT));
         oldUser.setName(user.getName());
         oldUser.setPassword( passwordEncoder.encode( user.getPassword() ) );
+
+        if( Objects.nonNull(accountLocked ) ) {
+            oldUser.setAccountLocked(accountLocked);
+        }
+
+        if( Objects.nonNull( accessLevel) ){
+            oldUser.setAccessLevel(accessLevel);
+        }
 
         return userRepository.save(oldUser);
     }

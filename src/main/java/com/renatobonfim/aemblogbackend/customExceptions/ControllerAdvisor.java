@@ -64,9 +64,9 @@ public class ControllerAdvisor {
 
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
     public ResponseEntity<ErrorResponseDTO> authenticationFailed(AuthenticationException ex) {
-        log.warn("Authentication failed: {}", ex.getMessage());
+        log.warn("Authentication failed: {}", ex.getMessage() );
 
-        return buildError(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage() );
     }
 
     /**

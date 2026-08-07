@@ -39,4 +39,9 @@ public class User {
     private String about;
 
     private String photoProfile;
+
+    @Enumerated (EnumType.STRING)
+    private AccessLevel accessLevel;
+
+    private Boolean accountLocked;
 }
