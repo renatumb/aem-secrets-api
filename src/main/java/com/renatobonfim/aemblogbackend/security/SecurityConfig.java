@@ -3,8 +3,10 @@ package com.renatobonfim.aemblogbackend.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.renatobonfim.aemblogbackend.dto.ErrorResponseDTO;
+import com.renatobonfim.aemblogbackend.userx.AccessLevel;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -36,6 +40,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(SecurityAccessProperties.class)
 public class SecurityConfig {
 
     @Value("${app.config.jwt.secret.key}")
@@ -45,7 +50,7 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http,  ObjectMapper objectMapper, SecurityAccessProperties accessProps) throws Exception {
 
         return http
                 .csrf(csrf -> csrf.disable())
@@ -53,14 +58,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                        .requestMatchers(accessProps.getPublicMatchers() ).permitAll()
+                        .requestMatchers(accessProps.getReadMatchers() ).hasAnyAuthority(AccessLevel.CAN_READ.toString() , AccessLevel.CAN_WRITE.toString() )
+                        .requestMatchers(accessProps.getWriteMatchers()).hasAuthority( AccessLevel.CAN_WRITE.toString() )
+                        .anyRequest().denyAll() )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint( (request, response, authException) -> writeError(response, objectMapper, HttpServletResponse.SC_UNAUTHORIZED, HttpStatus.UNAUTHORIZED.name()))
-                        .accessDeniedHandler((request, response, accessDeniedException) -> writeError(response, objectMapper, HttpServletResponse.SC_FORBIDDEN, HttpStatus.FORBIDDEN.name() ))
+                        .authenticationEntryPoint((request, response, authException) -> writeError(response, objectMapper, HttpServletResponse.SC_UNAUTHORIZED, HttpStatus.UNAUTHORIZED.name()))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> writeError(response, objectMapper, HttpServletResponse.SC_FORBIDDEN, HttpStatus.FORBIDDEN.name()))
                 )
                 .build();
     }
@@ -69,7 +74,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+        configuration.setAllowedOriginPatterns(Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())
                 .toList());
@@ -86,6 +91,17 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return converter;
     }
 
     @Bean
