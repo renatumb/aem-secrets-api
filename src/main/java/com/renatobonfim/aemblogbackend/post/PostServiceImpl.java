@@ -47,7 +47,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String uploadImage(String postId, MultipartFile file) {
+    public String uploadImage(String postId, MultipartFile file, Boolean iscover) {
         Post postFound = postRespository.findById(postId).orElseThrow(() -> new PostNotFoundException(String.format(Constants.POST_NOT_FOUND_ID, postId)));
 
         try {
@@ -68,7 +68,10 @@ public class PostServiceImpl implements PostService {
 
             String finalPath = target.subpath(1, 3).toString();
 
-            postFound.setThumbnail(finalPath);
+            if (iscover) {
+                postFound.setThumbnail(finalPath);
+            }
+
             postRespository.save(postFound);
 
             return finalPath; // Excluding the Constants.IMAGES_ROOT_PATH

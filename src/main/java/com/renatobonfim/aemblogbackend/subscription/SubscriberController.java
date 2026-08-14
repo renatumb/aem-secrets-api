@@ -26,10 +26,10 @@ public class SubscriberController {
         return ResponseEntity.ok().body(subscriberService.findAllSubscribers(page, size, sort, properties.split(",")));
     }
 
-    @GetMapping("/{subscriberEmail}")
-    public ResponseEntity<Subscriber> findSubscriberByEmail(@Validated @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
-        return ResponseEntity.ok(subscriberService.findSubscriberByEmail(subscriberEmail));
-    }
+//    @GetMapping("/{subscriberEmail}")
+//    public ResponseEntity<Subscriber> findSubscriberByEmail(@Validated @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
+//        return ResponseEntity.ok(subscriberService.findSubscriberByEmail(subscriberEmail));
+//    }
 
     @PostMapping
     public ResponseEntity<Subscriber> createSubscriber(@Valid @RequestBody Subscriber subscriber) throws URISyntaxException {

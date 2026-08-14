@@ -65,9 +65,11 @@ public class PostController {
 
     @PostMapping("/image")
     public ResponseEntity uploadImage(@RequestPart("postId") String postId,
-                                      @RequestPart("selected_file") MultipartFile multipartFile) {
+                                      @RequestPart("isCover") String isCover,
+                                      @RequestPart("selected_file") MultipartFile multipartFile
+                                      ) {
 
-        String imageLocation = postService.uploadImage(postId, multipartFile);
+        String imageLocation = postService.uploadImage(postId, multipartFile, Boolean.parseBoolean(isCover) );
 
         ResponseEntity<Map<String, String>> imageUrl = ResponseEntity.ok().body(Map.of("imageUrl", imageLocation));
         return imageUrl;

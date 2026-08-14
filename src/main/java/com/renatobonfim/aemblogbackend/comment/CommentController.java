@@ -34,10 +34,10 @@ public class CommentController {
         return ResponseEntity.ok(commentService.findAllCommentsByPost(page, size, sort, properties.split(","), postId, statusFilter));
     }
 
-    @GetMapping("/{commentId}")
-    public ResponseEntity<Comment> findById(@PathVariable("commentId") Integer commentId) {
-        return ResponseEntity.ok(commentService.findById(commentId));
-    }
+//    @GetMapping("/{commentId}")
+//    public ResponseEntity<Comment> findById(@PathVariable("commentId") Integer commentId) {
+//        return ResponseEntity.ok(commentService.findById(commentId));
+//    }
 
     @PostMapping
     public ResponseEntity<Comment> createComment(@Valid @RequestBody Comment comment) throws URISyntaxException, PostNotFoundException {

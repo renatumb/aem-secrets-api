@@ -22,7 +22,7 @@ public interface PostService {
 
     Post createPost(Post post) throws CategoryNotFoundException;
 
-    String uploadImage(String postId, MultipartFile file);
+    String uploadImage(String postId, MultipartFile file, Boolean isCover);
 
     byte [] downloadImage( String postId, String fileName) throws IOException;
 }
