@@ -22,10 +22,26 @@ public interface PostRespository extends JpaRepository<Post, String> {
 
     Page<Post> findByHighlight(Boolean highlight, Pageable pageable);
 
+    Page<Post> findByStatusPostIn(Collection<StatusPost> statuses, Pageable pageable);
+
+    Page<Post> findByHighlightAndStatusPostIn(Boolean highlight, Collection<StatusPost> statuses, Pageable pageable);
+
 //     Native (PostgreSQL only): SELECT * FROM _post WHERE :tagValue = ANY (tags)
 //    @Query(value = "SELECT * FROM _post WHERE :tagValue = ANY (tags)", nativeQuery = true)
 //    Page<Post> findByTagsIn(@Param("tagValue") String tag, Pageable pageable);
 
     @Query("SELECT DISTINCT p FROM Post p JOIN p.tags tag WHERE LOWER(tag) IN :tags")
     Page<Post> findByTagsIn(@Param("tags") Collection<String> tags, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT p FROM Post p
+            JOIN p.tags tag
+            WHERE LOWER(tag) IN :tags
+              AND p.statusPost IN :statuses
+            """)
+    Page<Post> findByTagsInAndStatusPostIn(
+            @Param("tags") Collection<String> tags,
+            @Param("statuses") Collection<StatusPost> statuses,
+            Pageable pageable
+    );
 }

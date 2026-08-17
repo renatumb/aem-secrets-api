@@ -110,34 +110,28 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAllPosts(int page, int size, String sort, String[] orderByFields, Category category, Boolean highlight, String tagFilter) {
+    public Page<Post> findAllPosts(int page, int size, String sort, String[] orderByFields, Category category, Boolean highlight, String tagFilter, List<StatusPost> statusPost) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sort), orderByFields);
 
         if (Objects.nonNull(category.getId())) {
-            return findAllPostByCategory(page, size, sort, orderByFields, category);
+            return findAllPostByCategory(page, size, sort, orderByFields, category, statusPost);
         }
 
-        if ( Objects.nonNull(highlight)){
-            return findByHighlight(page, size, sort, orderByFields, highlight);
+        if (Objects.nonNull(highlight)) {
+            return postRespository.findByHighlightAndStatusPostIn(highlight, statusPost, pageRequest);
         }
 
         if (Objects.nonNull(tagFilter) && !tagFilter.isBlank()) {
-
             List<String> tags = Arrays.stream(tagFilter.split(","))
                     .map(String::trim)
                     .filter(tag -> !tag.isEmpty())
                     .map(tag -> tag.toLowerCase(Locale.ROOT))
                     .toList();
 
-            return postRespository.findByTagsIn(tags, PageRequest.of(page, size, Sort.Direction.fromString(sort), orderByFields));
+            return postRespository.findByTagsInAndStatusPostIn(tags, statusPost, pageRequest);
         }
 
-        Page<Post> posts = postRespository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sort), orderByFields));
-        return posts;
-    }
-
-    private Page<Post> findByHighlight(int page, int size, String sort, String[] properties, Boolean highlight) {
-        Page<Post> posts = postRespository.findByHighlight(highlight, PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));
-        return posts;
+        return postRespository.findByStatusPostIn(statusPost, pageRequest);
     }
 
 
@@ -152,18 +146,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory) throws CategoryNotFoundException {
+    public Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory, List<StatusPost> statusPost) throws CategoryNotFoundException {
         Long categoryId = postCategory.getId();
 
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sort), properties);
-        List<Post> allPostByCategory = postRespository.findByCategories(category);
+        List<Post> filteredPosts = postRespository.findByCategories(category).stream()
+                .filter(post -> statusPost.contains(post.getStatusPost()))
+                .toList();
 
         long start = pageRequest.getOffset();
-        long end = Math.min((start + pageRequest.getPageSize()), allPostByCategory.size());
+        long end = Math.min((start + pageRequest.getPageSize()), filteredPosts.size());
 
-        return new PageImpl<Post>(allPostByCategory.subList((int) start, (int) end), pageRequest, allPostByCategory.size());
+        return new PageImpl<>(filteredPosts.subList((int) start, (int) end), pageRequest, filteredPosts.size());
     }
 
     @Override

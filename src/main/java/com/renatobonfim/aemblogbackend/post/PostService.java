@@ -7,14 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface PostService {
 
     void deletePostById(String PostId);
 
-    Page<Post> findAllPosts(int page, int size, String sort, String[] properties, Category category, Boolean highlight, String tagFilter);
+    Page<Post> findAllPosts(int page, int size, String sort, String[] properties, Category category, Boolean highlight, String tagFilter, List<StatusPost> statusPost);
 
-    Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory) throws CategoryNotFoundException;
+    Page<Post> findAllPostByCategory(int page, int size, String sort, String[] properties, Category postCategory, List<StatusPost> statusPost) throws CategoryNotFoundException;
 
     Post findPostByIdOrPermalink(String postPermalinkOrID) throws PostNotFoundException;
 

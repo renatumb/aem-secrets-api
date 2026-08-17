@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,13 +38,20 @@ public class PostController {
                                                    @RequestParam(value = "orderBy", defaultValue = "title") String orderByFields,
                                                    @RequestParam(value = "categoryFilter", required = false) Long categoryId,
                                                    @RequestParam(value = "highlight", required = false) Boolean highlight,
-                                                   @RequestParam(value = "tagFilter", required = false) String tagFilter
-                                                   ) throws CategoryNotFoundException {
+                                                   @RequestParam(value = "tagFilter", required = false) String tagFilter,
+                                                   @RequestParam(value = "statusPost", defaultValue = "PUBLISHED") List<StatusPost> statusPost
+    ) throws CategoryNotFoundException {
 
         Category category = Category.builder().build();
         category.setId(categoryId);
 
-        return ResponseEntity.ok().body(postService.findAllPosts(page, size, sort, orderByFields.split(","), category, highlight, tagFilter));
+        if (statusPost == null || statusPost.isEmpty()) {
+            statusPost = List.of(StatusPost.PUBLISHED);
+        }
+
+        Page<Post> allPosts = postService.findAllPosts(page, size, sort, orderByFields.split(","), category, highlight, tagFilter, statusPost);
+
+        return ResponseEntity.ok().body(allPosts);
     }
 
     @Operation(summary = "find a post by its #Id or Permalink .................... findPostByIdOrPermalink(@PathVariable String postPermalinkOrID) ")
