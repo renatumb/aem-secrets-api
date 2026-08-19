@@ -1,5 +1,6 @@
 package com.renatobonfim.aemblogbackend.subscription;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import jakarta.validation.constraints.*;
@@ -36,4 +37,11 @@ public class Subscriber {
     private boolean enableSubscription;
     private LocalDateTime dateCreation;
     private LocalDateTime dateStatus;
+
+    @JsonIgnore
+    @Column(unique = true)
+    private String unsubscribeToken;
+
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatusChangeSource statusChangeSource;
 }

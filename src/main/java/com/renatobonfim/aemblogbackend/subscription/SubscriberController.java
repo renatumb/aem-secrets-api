@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,12 @@ public class SubscriberController {
     public ResponseEntity<Subscriber> createSubscriber(@Valid @RequestBody Subscriber subscriber) throws URISyntaxException {
         Subscriber subscriberCreated = subscriberService.createSubscriber(subscriber);
         return ResponseEntity.created(new URI(subscriberCreated.getEmail())).body(subscriberCreated);
+    }
+
+    @PutMapping("/unsubscribe/{token}")
+    public ResponseEntity<Void> unsubscribe(@PathVariable("token") String token) {
+        subscriberService.unsubscribeByToken(token);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{subscriberEmail}")

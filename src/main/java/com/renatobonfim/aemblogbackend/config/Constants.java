@@ -18,6 +18,7 @@ public class Constants {
     public static final String POST_NOT_FOUND = "044. Post not found for given id/permalink: %s";
     public static final String COMMENT_NOT_FOUND = "046. Comment not found for given id: %s";
     public static final String INVALID_FIELD = "048. Invalid field";
+    public static final String SUBSCRIBER_UNSUBSCRIBE_TOKEN_NOT_FOUND = "050. Unsubscribe token not found";
 
     public static String PROFILE_PICTURE_STORAGE;
 

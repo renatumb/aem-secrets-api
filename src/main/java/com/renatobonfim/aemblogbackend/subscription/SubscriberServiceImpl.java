@@ -5,6 +5,7 @@ import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.SubscriberNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,9 @@ public class SubscriberServiceImpl implements SubscriberService {
     @Autowired
     private SubscriberRepository subscriberRepository;
 
+    @Autowired
+    private SubscriberEmailService subscriberEmailService;
+
     @Override
     public Subscriber createSubscriber(Subscriber subscriber) {
 
@@ -28,15 +32,21 @@ public class SubscriberServiceImpl implements SubscriberService {
             throw new InvalidFieldException(Constants.SUBSCRIBER_EMAIL_ALREADY_EXIST);
         }
 
-        return subscriberRepository.save(
+        Subscriber savedSubscriber = subscriberRepository.save(
                 Subscriber.builder()
                         .email(subsEmail)
                         .name(subsName)
                         .dateCreation(now )
                         .dateStatus( now )
                         .enableSubscription(true)
+                        .unsubscribeToken(UUID.randomUUID().toString())
+                        .statusChangeSource(SubscriptionStatusChangeSource.SUBSCRIBE)
                         .build()
         );
+
+        subscriberEmailService.sendWelcomeEmail(savedSubscriber);
+
+        return savedSubscriber;
     }
 
     @Override
@@ -53,7 +63,21 @@ public class SubscriberServiceImpl implements SubscriberService {
         
         oldSubscriber.setEnableSubscription( subscriber.isEnableSubscription() );
         oldSubscriber.setDateStatus( LocalDateTime.now() );
+        oldSubscriber.setStatusChangeSource(SubscriptionStatusChangeSource.EDITOR_PATCH);
+
         return subscriberRepository.save(oldSubscriber);
+    }
+
+    @Override
+    public void unsubscribeByToken(String token) {
+        Subscriber subscriber = subscriberRepository.findByUnsubscribeToken(token)
+                .orElseThrow(() -> new InvalidFieldException(Constants.SUBSCRIBER_UNSUBSCRIBE_TOKEN_NOT_FOUND));
+
+        subscriber.setEnableSubscription(false);
+        subscriber.setDateStatus(LocalDateTime.now());
+        subscriber.setStatusChangeSource(SubscriptionStatusChangeSource.UNSUBSCRIBE_LINK);
+
+        subscriberRepository.save(subscriber);
     }
 
     @Override
