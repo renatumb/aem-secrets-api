@@ -3,6 +3,7 @@ package com.renatobonfim.aemblogbackend.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.renatobonfim.aemblogbackend.dto.ErrorResponseDTO;
+import com.renatobonfim.aemblogbackend.security.recaptcha.RecaptchaFilter;
 import com.renatobonfim.aemblogbackend.userx.AccessLevel;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -50,13 +52,14 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http,  ObjectMapper objectMapper, SecurityAccessProperties accessProps) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http,  ObjectMapper objectMapper, SecurityAccessProperties accessProps, RecaptchaFilter recaptchaFilter) throws Exception {
 
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .addFilterBefore(recaptchaFilter, BearerTokenAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(accessProps.getPublicMatchers() ).permitAll()
                         .requestMatchers(accessProps.getReadMatchers() ).hasAnyAuthority(AccessLevel.CAN_READ.toString() , AccessLevel.CAN_WRITE.toString() )
@@ -80,7 +83,7 @@ public class SecurityConfig {
                 .toList());
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin","x-recaptcha-token"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 

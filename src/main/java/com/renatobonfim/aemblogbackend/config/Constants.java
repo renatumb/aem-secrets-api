@@ -19,6 +19,8 @@ public class Constants {
     public static final String COMMENT_NOT_FOUND = "046. Comment not found for given id: %s";
     public static final String INVALID_FIELD = "048. Invalid field";
     public static final String SUBSCRIBER_UNSUBSCRIBE_TOKEN_NOT_FOUND = "050. Unsubscribe token not found";
+    public static final String RECAPTCHA_TOKEN_MISSING = "052. Missing X-Recaptcha-Token header";
+    public static final String RECAPTCHA_VERIFICATION_FAILED = "054. reCAPTCHA verification failed";
 
     public static String PROFILE_PICTURE_STORAGE;
 
