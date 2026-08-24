@@ -1,46 +1,58 @@
 package com.renatobonfim.aemblogbackend.contact;
 
+import com.renatobonfim.aemblogbackend.notification.ContactEmailRequestedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSendException;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ContactService {
 
     private final JavaMailSender javaMailSender;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final String mailFrom;
     private final String mailPersonal;
 
     public ContactService(
             JavaMailSender javaMailSender,
+            ApplicationEventPublisher applicationEventPublisher,
             @Value("${app.config.email.from}") String mailFrom,
             @Value("${app.config.email.personal}") String mailPersonal) {
 
         this.javaMailSender = javaMailSender;
+        this.applicationEventPublisher = applicationEventPublisher;
         this.mailFrom = mailFrom;
         this.mailPersonal = mailPersonal;
     }
 
     public void sendEmail(Contact contact) {
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        applicationEventPublisher.publishEvent(new ContactEmailRequestedEvent(
+                contact.getName(),
+                contact.getEmail(),
+                contact.getMessage()
+        ));
+    }
 
-            helper.setFrom(mailFrom);
-            helper.setReplyTo(mailFrom);
-            helper.setTo(contact.getEmail());
-            helper.setBcc(mailPersonal);
-            helper.setSubject("AEM Secrets - Contact form received");
-            helper.setText(buildPlainText(contact), buildHtml(contact));
+    @Retryable(retryFor = { MessagingException.class, MailException.class }, maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 2))
+    public void deliverContactEmail(Contact contact) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException ex) {
-            throw new MailSendException("Failed to send contact email", ex);
-        }
+        helper.setFrom(mailFrom);
+        helper.setReplyTo(mailFrom);
+        helper.setTo(contact.getEmail());
+        helper.setBcc(mailPersonal);
+        helper.setSubject("AEM Secrets - Contact form received");
+        helper.setText(buildPlainText(contact), buildHtml(contact));
+
+        javaMailSender.send(mimeMessage);
     }
 
     private String buildPlainText(Contact contact) {

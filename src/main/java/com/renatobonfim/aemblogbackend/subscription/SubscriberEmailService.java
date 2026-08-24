@@ -3,9 +3,11 @@ package com.renatobonfim.aemblogbackend.subscription;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSendException;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,24 +28,21 @@ public class SubscriberEmailService {
         this.unsubscribeBaseUrl = unsubscribeBaseUrl;
     }
 
-    public void sendWelcomeEmail(Subscriber subscriber) {
+    @Retryable(retryFor = {MessagingException.class, MailException.class}, maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 2))
+    public void sendWelcomeEmail(Subscriber subscriber) throws MessagingException {
         String unsubscribeLink = UriComponentsBuilder.fromHttpUrl(unsubscribeBaseUrl)
                 .queryParam("token", subscriber.getUnsubscribeToken())
                 .toUriString();
 
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setFrom(mailFrom);
-            helper.setTo(subscriber.getEmail());
-            helper.setSubject("Welcome to AEM Secrets");
-            helper.setText(buildPlainText(subscriber, unsubscribeLink), buildHtml(subscriber, unsubscribeLink));
+        helper.setFrom(mailFrom);
+        helper.setTo(subscriber.getEmail());
+        helper.setSubject("Welcome to AEM Secrets");
+        helper.setText(buildPlainText(subscriber, unsubscribeLink), buildHtml(subscriber, unsubscribeLink));
 
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException ex) {
-            throw new MailSendException("Failed to send subscription welcome email", ex);
-        }
+        javaMailSender.send(mimeMessage);
     }
 
     private String buildPlainText(Subscriber subscriber, String unsubscribeLink) {

@@ -3,10 +3,12 @@ package com.renatobonfim.aemblogbackend.subscription;
 import com.renatobonfim.aemblogbackend.config.Constants;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.SubscriberNotFoundException;
+import com.renatobonfim.aemblogbackend.notification.WelcomeEmailRequestedEvent;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,7 +21,7 @@ public class SubscriberServiceImpl implements SubscriberService {
     private SubscriberRepository subscriberRepository;
 
     @Autowired
-    private SubscriberEmailService subscriberEmailService;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Subscriber createSubscriber(Subscriber subscriber) {
@@ -44,7 +46,11 @@ public class SubscriberServiceImpl implements SubscriberService {
                         .build()
         );
 
-        subscriberEmailService.sendWelcomeEmail(savedSubscriber);
+        applicationEventPublisher.publishEvent(new WelcomeEmailRequestedEvent(
+                savedSubscriber.getEmail(),
+                savedSubscriber.getName(),
+                savedSubscriber.getUnsubscribeToken()
+        ));
 
         return savedSubscriber;
     }
