@@ -9,7 +9,9 @@ public interface SubscriberService {
 
     Subscriber updateSubscriber(Subscriber subscriber, String subscriberEmail) throws SubscriberNotFoundException;
 
-    Subscriber findSubscriberByEmail(String  subscriberEmail) throws SubscriberNotFoundException;
+    void unsubscribeByToken(String token);
+
+    Subscriber findSubscriberByEmail(String subscriberEmail) throws SubscriberNotFoundException;
 
     Page<Subscriber> findAllSubscribers(int page, int size, String sort, String[] properties);
 }

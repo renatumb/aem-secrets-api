@@ -3,9 +3,12 @@ package com.renatobonfim.aemblogbackend.subscription;
 import com.renatobonfim.aemblogbackend.customExceptions.SubscriberNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,19 +27,25 @@ public class SubscriberController {
         return ResponseEntity.ok().body(subscriberService.findAllSubscribers(page, size, sort, properties.split(",")));
     }
 
-    @GetMapping("/{subscriberEmail}")
-    public ResponseEntity<Subscriber> findSubscriberByEmail(@PathVariable String subscriberEmail) throws SubscriberNotFoundException {
-        return ResponseEntity.ok(subscriberService.findSubscriberByEmail(subscriberEmail));
-    }
+//    @GetMapping("/{subscriberEmail}")
+//    public ResponseEntity<Subscriber> findSubscriberByEmail(@Validated @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
+//        return ResponseEntity.ok(subscriberService.findSubscriberByEmail(subscriberEmail));
+//    }
 
     @PostMapping
-    public ResponseEntity<Subscriber> createSubscriber(@RequestBody Subscriber subscriber) throws URISyntaxException {
+    public ResponseEntity<Subscriber> createSubscriber(@Valid @RequestBody Subscriber subscriber) throws URISyntaxException {
         Subscriber subscriberCreated = subscriberService.createSubscriber(subscriber);
         return ResponseEntity.created(new URI(subscriberCreated.getEmail())).body(subscriberCreated);
     }
 
-    @PutMapping("/{subscriberEmail}")
-    public ResponseEntity<Subscriber> updateSubscriber(@RequestBody Subscriber subscriber, @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
+    @PutMapping("/unsubscribe/{token}")
+    public ResponseEntity<Void> unsubscribe(@PathVariable("token") String token) {
+        subscriberService.unsubscribeByToken(token);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("/{subscriberEmail}")
+    public ResponseEntity<Subscriber> updateSubscriber(@RequestBody Subscriber subscriber, @Validated @PathVariable String subscriberEmail) throws SubscriberNotFoundException {
         return ResponseEntity.ok(subscriberService.updateSubscriber(subscriber, subscriberEmail));
     }
 

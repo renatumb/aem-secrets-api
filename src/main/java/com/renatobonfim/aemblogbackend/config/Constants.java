@@ -6,10 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Constants {
 
-    public static final String SUBSCRIBER_EMAIL_MISSING = "020. Subscriber 'EMAIL'  is missing";
-    public static final String SUBSCRIBER_NAME_MISSING = "022. Subscriber 'NAME'  is missing ";
-    public static final String SUBSCRIBER_EMAIL_INVALID = "024. Subscriber 'EMAIL' invalid";
-    public static final String SUBSCRIBER_NAME_INVALID = "026. Subscriber 'NAME' invalid";
+
     public static final String SUBSCRIBER_EMAIL_ALREADY_EXIST = "028. Subscriber 'EMAIL' already being used";
     public static final String USER_NOT_FOUND_ID = "030. User not found for given id: %s";
     public static final String USER_NAME_IS_EMPTY = "032. User NAME is empty";
@@ -21,6 +18,9 @@ public class Constants {
     public static final String POST_NOT_FOUND = "044. Post not found for given id/permalink: %s";
     public static final String COMMENT_NOT_FOUND = "046. Comment not found for given id: %s";
     public static final String INVALID_FIELD = "048. Invalid field";
+    public static final String SUBSCRIBER_UNSUBSCRIBE_TOKEN_NOT_FOUND = "050. Unsubscribe token not found";
+    public static final String RECAPTCHA_TOKEN_MISSING = "052. Missing X-Recaptcha-Token header";
+    public static final String RECAPTCHA_VERIFICATION_FAILED = "054. reCAPTCHA verification failed";
 
     public static String PROFILE_PICTURE_STORAGE;
 
@@ -33,5 +33,13 @@ public class Constants {
     @Value("${AppConfig.currentHost}")
     public void setCurrentHost(String value){
         Constants.CURRENT_HOST = value;
+    }
+
+    /** */
+    public static String IMAGES_ROOT_PATH;
+
+    @Value("${app.config.images-post-root-path}")
+    public void setImagesUploadRootPath(String value) {
+        Constants.IMAGES_ROOT_PATH = value;
     }
 }

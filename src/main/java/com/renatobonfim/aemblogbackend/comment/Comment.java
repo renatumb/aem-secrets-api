@@ -3,7 +3,7 @@ package com.renatobonfim.aemblogbackend.comment;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.renatobonfim.aemblogbackend.post.Post;
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,12 +36,13 @@ public class Comment {
     
     @Email(message = "'email' is not valid")
     private String emailAuthor;
-    
-    private String webSiteAuthor;
-    
-    private Date creationDate;
-    private boolean approved;
-    private Date approvalDate;
+
+    private LocalDateTime creationDate;
+
+    private LocalDateTime statusDate;
+
+    @Enumerated (EnumType.STRING)
+    private StatusComment statusComment;
 
     @NotNull(message = "Post ID must be informed" )
     @JsonBackReference

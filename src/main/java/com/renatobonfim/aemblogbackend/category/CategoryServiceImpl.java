@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,6 +43,15 @@ public class CategoryServiceImpl implements CategoryService {
         return this.categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException( categoryId));
     }
 
+    @Override
+    public Category findCategory(String categoryIDorName) {
+        try {
+            Long categoryID = Long.parseLong(categoryIDorName);
+            return findCategoryById(categoryID);
+        } catch (NumberFormatException e) {
+            return categoryRepository.findByName(categoryIDorName).orElseThrow(() -> new CategoryNotFoundException(categoryIDorName));
+        }
+    }
     @Override
     public Page<Category> findAllCategories(int page, int size, String sort, String[] properties) {
         return categoryRepository.findAll(PageRequest.of(page, size, Sort.Direction.fromString(sort), properties));

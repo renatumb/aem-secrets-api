@@ -26,9 +26,9 @@ public class CategoryController {
         return ResponseEntity.ok().body(categoryService.findAllCategories(page, size, sort, properties.split(",")));
     }
 
-    @GetMapping("/{categoryID}")
-    public ResponseEntity<Category> findCategoryByID(@PathVariable Long categoryID) throws CategoryNotFoundException {
-        return ResponseEntity.ok(categoryService.findCategoryById(categoryID));
+    @GetMapping("/{categoryIDorName}")
+    public ResponseEntity<Category> findCategory(@PathVariable("categoryIDorName") String categoryIDorName) throws CategoryNotFoundException {
+        return ResponseEntity.ok(categoryService.findCategory(categoryIDorName));
     }
 
     @DeleteMapping("/{categoryID}")
