@@ -3,6 +3,7 @@ package com.renatobonfim.aemblogbackend.contact;
 import com.renatobonfim.aemblogbackend.notification.ContactEmailRequestedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.MailException;
@@ -12,6 +13,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ContactService {
 
@@ -52,6 +54,7 @@ public class ContactService {
         helper.setSubject("AEM Secrets - Contact form received");
         helper.setText(buildPlainText(contact), buildHtml(contact));
 
+        log.debug("Sending email to {} ", contact.getEmail());
         javaMailSender.send(mimeMessage);
     }
 
