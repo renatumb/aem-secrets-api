@@ -36,3 +36,4 @@ build/
 /.mvn/
 /config.properties
 /deploy.sh
+/config-prod.properties
