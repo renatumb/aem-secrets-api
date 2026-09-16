@@ -13,11 +13,9 @@ public interface UserService {
 
     void deleteUser(String userId) throws UserNotFoundException;
 
-    String uploadPhoto(String userId, MultipartFile multipartFile) throws UserNotFoundException;
-
     byte[] readPhoto(Path pathProfilePhoto);
 
-    User updateUser(User user, String UserId) throws UserNotFoundException;
+    User updateUser(User user, String UserId, MultipartFile photoProfile) throws UserNotFoundException;
 
     User createUser(User user, MultipartFile profilePhoto );
 }

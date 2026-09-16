@@ -22,11 +22,11 @@ public class Constants {
     public static final String RECAPTCHA_TOKEN_MISSING = "052. Missing X-Recaptcha-Token header";
     public static final String RECAPTCHA_VERIFICATION_FAILED = "054. reCAPTCHA verification failed";
 
-    public static String PROFILE_PICTURE_STORAGE;
+    public static String USER_PROFILE_PICTURE_PATH;
 
-    @Value("${AppConfig.profilePictureStorage}")
+    @Value("${app.config.user-profile-picture}")
     public void setProfilePictureDirectory(String value){
-        Constants.PROFILE_PICTURE_STORAGE = value;
+        Constants.USER_PROFILE_PICTURE_PATH = value;
     }
 
     public static String CURRENT_HOST;

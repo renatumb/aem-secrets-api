@@ -1,6 +1,7 @@
 package com.renatobonfim.aemblogbackend.customExceptions;
 
 import com.renatobonfim.aemblogbackend.dto.ErrorResponseDTO;
+import java.nio.file.NoSuchFileException;
 import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
@@ -10,15 +11,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @ControllerAdvice
 public class ControllerAdvisor {
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> unsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        log.warn(ex.getMessage());
+        return buildError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());
+    }
+
+    @ExceptionHandler({
+            MissingServletRequestPartException.class,
+            MissingServletRequestParameterException.class,
+            MultipartException.class,
+            MethodArgumentTypeMismatchException.class
+    })
+    public ResponseEntity<ErrorResponseDTO> multipartOrBindingError(Exception ex) {
+        log.warn("{}: {}", ex.getClass().getSimpleName(), ex.getMessage());
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler({CategoryNotFoundException.class,
             SubscriberNotFoundException.class,
             UserNotFoundException.class,
@@ -67,6 +90,12 @@ public class ControllerAdvisor {
         log.warn("Authentication failed: {}", ex.getMessage() );
 
         return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage() );
+    }
+
+    @ExceptionHandler( NoSuchFileException.class)
+    public ResponseEntity<ErrorResponseDTO> noSuchFileException(NoSuchFileException ex){
+        log.warn("No Such FileException: {}", ex.getMessage() );
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage() );
     }
 
     /**
