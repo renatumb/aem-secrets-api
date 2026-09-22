@@ -3,10 +3,12 @@ package com.renatobonfim.aemblogbackend.post;
 import com.renatobonfim.aemblogbackend.category.Category;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
+import com.renatobonfim.aemblogbackend.customExceptions.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +64,12 @@ public class PostController {
 
     @Operation(summary = "Create a Post.................... createPost(@RequestBody Post post) ")
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) throws URISyntaxException, CategoryNotFoundException {
+    public ResponseEntity<Post> createPost(@RequestBody Post post, Principal subject) throws URISyntaxException, CategoryNotFoundException, UserNotFoundException {
 
         post.setStatusPost( StatusPost.DRAFT );
         post.setHighlight(false);
 
-        Post postCreated = postService.createPost(post);
+        Post postCreated = postService.createPost(post, subject.getName());
         return ResponseEntity.created(new URI(postCreated.getId().toString())).body(postCreated);
     }
 

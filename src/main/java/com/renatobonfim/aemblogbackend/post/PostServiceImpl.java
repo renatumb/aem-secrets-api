@@ -6,6 +6,9 @@ import com.renatobonfim.aemblogbackend.config.Constants;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.InvalidFieldException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
+import com.renatobonfim.aemblogbackend.customExceptions.UserNotFoundException;
+import com.renatobonfim.aemblogbackend.userx.User;
+import com.renatobonfim.aemblogbackend.userx.UserRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +33,14 @@ public class PostServiceImpl implements PostService {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Override
-    public Post createPost(Post post) throws CategoryNotFoundException {
+    public Post createPost(Post post, String authorEmail) throws CategoryNotFoundException, UserNotFoundException {
+        User author = userRepository.findUserByEmail(authorEmail.toLowerCase(Locale.ROOT)).orElseThrow(() -> new UserNotFoundException(authorEmail));
+
+        post.setAuthor(author);
         post.setCreationDate(new Date());
         post.setLastModificationDate(new Date());
         
@@ -51,10 +60,6 @@ public class PostServiceImpl implements PostService {
         Post postFound = postRespository.findById(postId).orElseThrow(() -> new PostNotFoundException(String.format(Constants.POST_NOT_FOUND_ID, postId)));
 
         try {
-//          String originalFilename = file.getOriginalFilename();
-//          String extension = (originalFilename != null && originalFilename.contains(".")) ? originalFilename.substring(originalFilename.lastIndexOf(".")) : ".png";
-//          String fileName = UUID.randomUUID() + extension;
-
             String fileName = Objects.requireNonNull(file.getOriginalFilename()).trim().toLowerCase();
 
             Path storageDir = Paths.get(Constants.IMAGES_ROOT_PATH, postId).normalize();

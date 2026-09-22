@@ -3,6 +3,7 @@ package com.renatobonfim.aemblogbackend.post;
 import com.renatobonfim.aemblogbackend.category.Category;
 import com.renatobonfim.aemblogbackend.customExceptions.CategoryNotFoundException;
 import com.renatobonfim.aemblogbackend.customExceptions.PostNotFoundException;
+import com.renatobonfim.aemblogbackend.customExceptions.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public interface PostService {
 
     Post updatePost(Post post, String postId) throws PostNotFoundException, CategoryNotFoundException;
 
-    Post createPost(Post post) throws CategoryNotFoundException;
+    Post createPost(Post post, String authorEmail) throws CategoryNotFoundException, UserNotFoundException;
 
     String uploadImage(String postId, MultipartFile file, Boolean isCover);
 

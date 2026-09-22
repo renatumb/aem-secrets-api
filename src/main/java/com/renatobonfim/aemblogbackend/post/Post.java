@@ -1,5 +1,6 @@
 package com.renatobonfim.aemblogbackend.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.renatobonfim.aemblogbackend.category.Category;
 import com.renatobonfim.aemblogbackend.comment.Comment;
@@ -60,6 +61,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"id", "email", "password", "accessLevel", "accountLocked"})
     private User author;
     
     @JsonManagedReference
