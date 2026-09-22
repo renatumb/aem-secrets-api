@@ -74,6 +74,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail().toLowerCase(Locale.ROOT))
                 .password( passwordEncoder.encode( user.getPassword() ))
                 .about(user.getAbout())
+                .webLink(user.getWebLink())
                 .accessLevel( AccessLevel.CAN_READ )
                 .accountLocked(false)
                 .build()
@@ -130,6 +131,10 @@ public class UserServiceImpl implements UserService {
 
         if( Objects.nonNull( user.getAbout() ) ) {
             oldUser.setAbout( user.getAbout() );
+        }
+
+        if( Objects.nonNull( user.getWebLink() ) ) {
+            oldUser.setWebLink( user.getWebLink() );
         }
 
         if( Objects.nonNull( user.getAccessLevel() ) ){

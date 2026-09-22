@@ -40,6 +40,8 @@ public class User {
 
     private String photoProfile;
 
+    private String webLink;
+
     @Enumerated (EnumType.STRING)
     private AccessLevel accessLevel;
 

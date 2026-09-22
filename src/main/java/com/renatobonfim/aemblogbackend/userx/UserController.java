@@ -44,6 +44,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable("userId") String userID,
                                            @RequestParam(value = "name", required = false) String name,
                                            @RequestParam(value = "about", required = false) String about,
+                                           @RequestParam(value = "webLink", required = false) String webLink,
                                            @RequestParam(value = "accessLevel", required = false) String accessLevel,
                                            @RequestParam(value = "accountLocked", required = false) Boolean accountLocked,
                                            @RequestParam(value = "password", required = false) String password,
@@ -54,6 +55,7 @@ public class UserController {
 
         userPayload.setAbout(name);
         userPayload.setAbout(about);
+        userPayload.setWebLink(webLink);
         userPayload.setAccessLevel(Objects.nonNull(accessLevel) ? AccessLevel.valueOf(accessLevel) : null);
         userPayload.setAccountLocked(accountLocked);
         userPayload.setPassword(password);
