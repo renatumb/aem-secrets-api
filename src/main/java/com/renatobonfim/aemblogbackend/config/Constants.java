@@ -29,12 +29,6 @@ public class Constants {
         Constants.USER_PROFILE_PICTURE_PATH = value;
     }
 
-    public static String CURRENT_HOST;
-    @Value("${AppConfig.currentHost}")
-    public void setCurrentHost(String value){
-        Constants.CURRENT_HOST = value;
-    }
-
     /** */
     public static String IMAGES_ROOT_PATH;
 
